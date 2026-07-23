@@ -1,0 +1,17 @@
+{
+  "name": "Village Cafe Manager",
+  "short_name": "Village Cafe",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff8f3",
+  "theme_color": "#fff8f3",
+  "description": "Village Cafe opening, daily and closing manager toolkit.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
