@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff8f3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Village Cafe">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Village Cafe Manager</title>
+<style>
+:root {
+  --bg:#fff8f3; --card:#fff; --ink:#2e2825; --muted:#786b65;
+  --pink:#ce5675; --pink2:#e58ba2; --green:#6f9f75; --green-bg:#eaf4e9;
+  --line:#eeded7; --shadow:0 10px 28px rgba(74,49,39,.10);
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:linear-gradient(180deg,#fffaf6 0%,#f7eee8 100%);
+  color:var(--ink); -webkit-tap-highlight-color:transparent;
+}
+button { font:inherit; }
+.app {
+  max-width:720px; margin:0 auto;
+  padding:calc(16px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom));
+}
+.header {
+  background:rgba(255,255,255,.96);
+  border:1px solid #f1d8df; border-radius:24px;
+  padding:20px; box-shadow:var(--shadow); margin-bottom:16px;
+}
+.eyebrow {
+  color:var(--pink); font-size:12px; font-weight:900;
+  letter-spacing:.12em; text-transform:uppercase;
+}
+h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
+.subtitle { color:var(--muted); font-size:14px; }
+.menu { display:grid; gap:12px; }
+.menu-card {
+  width:100%; border:0; text-align:left; color:var(--ink);
+  background:var(--card); border-radius:20px; padding:18px;
+  box-shadow:0 5px 18px rgba(74,49,39,.08);
+  display:flex; align-items:center; gap:15px; min-height:92px;
+}
+.menu-card:active { transform:scale(.99); }
+.menu-icon { font-size:32px; flex:0 0 42px; }
+.menu-title { font-size:20px; font-weight:850; margin-bottom:3px; }
+.menu-note { color:var(--muted); font-size:14px; }
+.screen { display:none; }
+.screen.active { display:block; }
+.back {
+  width:100%; border:0; border-radius:14px; padding:13px;
+  background:#efe7e2; color:var(--ink); font-weight:850; margin-bottom:12px;
+}
+.panel {
+  background:var(--card); border-radius:22px; padding:18px;
+  box-shadow:var(--shadow); margin-bottom:14px;
+}
+.panel h2 { margin:4px 0 12px; font-size:27px; }
+.progress-row {
+  display:flex; justify-content:space-between;
+  font-size:14px; font-weight:850; margin-bottom:8px;
+}
+.track {
+  height:14px; border-radius:999px; overflow:hidden; background:#eee5df;
+}
+.bar {
+  height:100%; width:0; border-radius:999px;
+  background:linear-gradient(90deg,var(--pink),var(--pink2));
+  transition:width .2s ease;
+}
+.reset {
+  width:100%; border:0; border-radius:14px; padding:13px;
+  margin-top:13px; background:#f1ebe7; color:var(--ink); font-weight:850;
+}
+.list { display:grid; gap:10px; }
+.task {
+  width:100%; min-height:62px; border:2px solid transparent;
+  border-radius:17px; background:#fff; padding:14px 15px;
+  display:flex; align-items:center; gap:14px; text-align:left;
+  color:var(--ink); box-shadow:0 4px 14px rgba(74,49,39,.06);
+}
+.box {
+  width:29px; height:29px; flex:0 0 29px;
+  border:2px solid #cdbfb7; border-radius:9px;
+  display:grid; place-items:center; color:#fff; font-weight:900;
+}
+.label { font-size:17px; font-weight:720; line-height:1.25; }
+.task.done { background:var(--green-bg); border-color:var(--green); }
+.task.done .box { background:var(--green); border-color:var(--green); }
+.task.done .label { text-decoration:line-through; color:#526a55; }
+.complete {
+  display:none; margin-top:14px; background:#fff;
+  border:2px solid var(--green); border-radius:18px;
+  padding:18px; text-align:center; font-size:19px; font-weight:900;
+}
+.complete.show { display:block; }
+.coming {
+  min-height:220px; display:grid; place-items:center; text-align:center;
+}
+.coming .big { font-size:44px; margin-bottom:8px; }
+.coming h2 { margin:0 0 6px; }
+.coming p { margin:0; color:var(--muted); }
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen active">
+    <header class="header">
+      <div class="eyebrow">Village Cafe 🍒</div>
+      <h1>Manager</h1>
+      <div class="subtitle"><em>Checklists. Reminders. Notes.</em></div>
+    </header>
+
+    <div class="menu">
+      <button class="menu-card" data-go="opening">
+        <div class="menu-icon">🌅</div>
+        <div>
+          <div class="menu-title">Opening</div>
+          <div class="menu-note">Complete the opening checklist</div>
+        </div>
+      </button>
+
+      <button class="menu-card" data-go="daily">
+        <div class="menu-icon">☀️</div>
+        <div>
+          <div class="menu-title">Daily</div>
+          <div class="menu-note">Coming soon</div>
+        </div>
+      </button>
+
+      <button class="menu-card" data-go="closing">
+        <div class="menu-icon">🌙</div>
+        <div>
+          <div class="menu-title">Closing</div>
+          <div class="menu-note">Complete the closing checklist</div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <section id="opening" class="screen">
+    <button class="back" data-go="home">← Home</button>
+    <div class="panel">
+      <div class="eyebrow">Village Cafe 🍒</div>
+      <h2>Opening Checklist</h2>
+      <div class="progress-row">
+        <span id="count">0 of 25 complete</span>
+        <span id="pct">0%</span>
+      </div>
+      <div class="track"><div class="bar" id="bar"></div></div>
+      <button class="reset" id="reset">Reset Checklist</button>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="complete" id="complete">Opening complete! 🍒</div>
+  </section>
+
+  <section id="daily" class="screen">
+    <button class="back" data-go="home">← Home</button>
+    <div class="panel coming">
+      <div>
+        <div class="big">☀️</div>
+        <h2>Daily</h2>
+        <p>Coming soon</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="closing" class="screen">
+    <button class="back" data-go="home">← Home</button>
+    <div class="panel">
+      <div class="eyebrow">Village Cafe 🍒</div>
+      <h2>Closing Checklist</h2>
+      <div class="progress-row">
+        <span id="closingCount">0 of 32 complete</span>
+        <span id="closingPct">0%</span>
+      </div>
+      <div class="track"><div class="bar" id="closingBar"></div></div>
+      <button class="reset" id="closingReset">Reset Checklist</button>
+    </div>
+    <div class="list" id="closingList"></div>
+    <div class="complete" id="closingComplete">Closing complete! 🍒</div>
+  </section>
+</main>
+
+<script>
+const openingTasks = ["Clock In", "Turn On Music", "Turn On Air Conditioning", "Turn On Fans", "Turn On Lights", "Laundry", "Open Porch", "Check Bathrooms", "Quick Walk Through The Cafe", "Check General Chores From Yesterday", "Pull All Chore Lists and Section Cards", "Fill Out Sections and Chore Lists", "Take Pic of Specials", "Count Coffee Cake, Quiche and Ask About FT", "Enter Special #s Into The Computer", "Write Specials on Board", "Any Silverware or Dishes From Last Night To Put Away?", "Check Desserts", "Bussing Tubs Out", "Straighten / Fix / King and Queen of England", "Turn ON \u201cOpen\u201d Sign at 10:28", "Take Flags Out", "Finger Test Soil in Planters", "Check For Leaves and Debris on Porch/Lot", "Count Drawer"];
+const closingTasks = ["Turn Open Sign Off", "Bring Flags Onto Porch", "Empty 3 Trash Cans", "Check Out Servers", "Count Drawer", "Create Deposit", "$300 Exactly Left in Drawer", "Close Out Day on Toast", "Staple Together (Put In Brown Folder): Cash Drawer Printout, Z Report, Deposit Acknowledgement, Receipts and Gift Certificates From the Day", "Write Down Net Sales, #Guests and Weather On Calendar", "Calculate Busser Tip Payouts. Put in Drawer.", "Close Porch", "Kitchen Needs For Tomorrow", "Restock Hostess Station", "Check Server Chores Are Done", "Check Busser Chores Are Done", "Double Check Espresso Machine Was Cleaned", "Check Bathrooms (Clean if no busser)", "Thermostat (74/summer and 69/winter)", "Coffee Urn on HOLD", "Coffee Warming Stations OFF", "Check Clean Bussing Tubs at All Stations", "Tables Set Uniformly and Correctly", "Chairs Pushed In and Straight", "Final Walk Through", "Final Check All Doors are Locked", "Final Check Equipment Off and Coolers Shut", "Turn Off Lights", "Turn Off Fans", "Clock Out", "Text Kim When You Leave: Stock/Facility/Staffing Issues/Cash Coin Needs/Need To Knows", "Make Bank Deposit"];
+
+const configs = {
+  opening: {
+    tasks: openingTasks,
+    storageKey: "villageCafeOpeningSimpleV1",
+    listId: "list", countId: "count", pctId: "pct", barId: "bar",
+    completeId: "complete", resetId: "reset",
+    resetPrompt: "Reset every opening item?"
+  },
+  closing: {
+    tasks: closingTasks,
+    storageKey: "villageCafeClosingSimpleV1",
+    listId: "closingList", countId: "closingCount", pctId: "closingPct", barId: "closingBar",
+    completeId: "closingComplete", resetId: "closingReset",
+    resetPrompt: "Reset every closing item?"
+  }
+};
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll("[data-go]").forEach(btn => {
+  btn.addEventListener("click", () => show(btn.dataset.go));
+});
+
+function getState(config) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(config.storageKey) || "[]");
+    return config.tasks.map((_, i) => Boolean(saved[i]));
+  } catch (error) {
+    return config.tasks.map(() => false);
+  }
+}
+
+function renderChecklist(name) {
+  const config = configs[name];
+  const state = getState(config);
+  const list = document.getElementById(config.listId);
+  list.innerHTML = "";
+
+  config.tasks.forEach((task, index) => {
+    const button = document.createElement("button");
+    button.className = "task" + (state[index] ? " done" : "");
+    button.type = "button";
+    button.innerHTML =
+      '<span class="box">' + (state[index] ? '✓' : '') + '</span>' +
+      '<span class="label">' + task + '</span>';
+
+    button.addEventListener("click", () => {
+      state[index] = !state[index];
+      localStorage.setItem(config.storageKey, JSON.stringify(state));
+      renderChecklist(name);
+    });
+
+    list.appendChild(button);
+  });
+
+  const done = state.filter(Boolean).length;
+  const percent = Math.round((done / config.tasks.length) * 100);
+  document.getElementById(config.countId).textContent = done + " of " + config.tasks.length + " complete";
+  document.getElementById(config.pctId).textContent = percent + "%";
+  document.getElementById(config.barId).style.width = percent + "%";
+  document.getElementById(config.completeId).className =
+    done === config.tasks.length ? "complete show" : "complete";
+}
+
+Object.entries(configs).forEach(([name, config]) => {
+  document.getElementById(config.resetId).addEventListener("click", () => {
+    if (confirm(config.resetPrompt)) {
+      localStorage.removeItem(config.storageKey);
+      renderChecklist(name);
+      window.scrollTo(0,0);
+    }
+  });
+  renderChecklist(name);
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js"));
+}
+</script>
+</body>
+</html>
