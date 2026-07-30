@@ -81,7 +81,7 @@ h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
 .task {
   width:100%; min-height:62px; border:2px solid transparent;
   border-radius:17px; background:#fff; padding:14px 15px;
-  display:flex; align-items:center; gap:14px; text-align:left;
+  display:flex; align-items:flex-start; gap:14px; text-align:left;
   color:var(--ink); box-shadow:0 4px 14px rgba(74,49,39,.06);
 }
 .box {
@@ -89,7 +89,10 @@ h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
   border:2px solid #cdbfb7; border-radius:9px;
   display:grid; place-items:center; color:#fff; font-weight:900;
 }
-.label { font-size:17px; font-weight:720; line-height:1.25; }
+.task-copy { flex:1; min-width:0; }
+.label { display:block; font-size:17px; font-weight:720; line-height:1.25; }
+.details { display:block; margin-top:6px; color:var(--muted); font-size:14px; font-weight:500; line-height:1.4; }
+.details strong { color:var(--ink); }
 .task.done { background:var(--green-bg); border-color:var(--green); }
 .task.done .box { background:var(--green); border-color:var(--green); }
 .task.done .label { text-decoration:line-through; color:#526a55; }
@@ -129,7 +132,7 @@ h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
         <div class="menu-icon">☀️</div>
         <div>
           <div class="menu-title">Daily</div>
-          <div class="menu-note">Coming soon</div>
+          <div class="menu-note">Reminders and manager tasks</div>
         </div>
       </button>
 
@@ -161,13 +164,18 @@ h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
 
   <section id="daily" class="screen">
     <button class="back" data-go="home">← Home</button>
-    <div class="panel coming">
-      <div>
-        <div class="big">☀️</div>
-        <h2>Daily</h2>
-        <p>Coming soon</p>
+    <div class="panel">
+      <div class="eyebrow">Village Cafe 🍒</div>
+      <h2>Daily Checklist</h2>
+      <div class="progress-row">
+        <span id="dailyCount">0 of 14 complete</span>
+        <span id="dailyPct">0%</span>
       </div>
+      <div class="track"><div class="bar" id="dailyBar"></div></div>
+      <button class="reset" id="dailyReset">Reset Checklist</button>
     </div>
+    <div class="list" id="dailyList"></div>
+    <div class="complete" id="dailyComplete">Daily checklist complete! 🍒</div>
   </section>
 
   <section id="closing" class="screen">
@@ -176,7 +184,7 @@ h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
       <div class="eyebrow">Village Cafe 🍒</div>
       <h2>Closing Checklist</h2>
       <div class="progress-row">
-        <span id="closingCount">0 of 32 complete</span>
+        <span id="closingCount">0 of 31 complete</span>
         <span id="closingPct">0%</span>
       </div>
       <div class="track"><div class="bar" id="closingBar"></div></div>
@@ -189,7 +197,25 @@ h1 { margin:5px 0 5px; font-size:30px; line-height:1.05; }
 
 <script>
 const openingTasks = ["Clock In", "Turn On Music", "Turn On Air Conditioning", "Turn On Fans", "Turn On Lights", "Laundry", "Open Porch", "Check Bathrooms", "Quick Walk Through The Cafe", "Check General Chores From Yesterday", "Pull All Chore Lists and Section Cards", "Fill Out Sections and Chore Lists", "Take Pic of Specials", "Count Coffee Cake, Quiche and Ask About FT", "Enter Special #s Into The Computer", "Write Specials on Board", "Any Silverware or Dishes From Last Night To Put Away?", "Check Desserts", "Bussing Tubs Out", "Straighten / Fix / King and Queen of England", "Turn ON \u201cOpen\u201d Sign at 10:28", "Take Flags Out", "Finger Test Soil in Planters", "Check For Leaves and Debris on Porch/Lot", "Count Drawer"];
-const closingTasks = ["Turn Open Sign Off", "Bring Flags Onto Porch", "Empty 3 Trash Cans", "Check Out Servers", "Count Drawer", "Create Deposit", "$300 Exactly Left in Drawer", "Close Out Day on Toast", "Staple Together (Put In Brown Folder): Cash Drawer Printout, Z Report, Deposit Acknowledgement, Receipts and Gift Certificates From the Day", "Write Down Net Sales, #Guests and Weather On Calendar", "Calculate Busser Tip Payouts. Put in Drawer.", "Close Porch", "Kitchen Needs For Tomorrow", "Restock Hostess Station", "Check Server Chores Are Done", "Check Busser Chores Are Done", "Double Check Espresso Machine Was Cleaned", "Check Bathrooms (Clean if no busser)", "Thermostat (74/summer and 69/winter)", "Coffee Urn on HOLD", "Coffee Warming Stations OFF", "Check Clean Bussing Tubs at All Stations", "Tables Set Uniformly and Correctly", "Chairs Pushed In and Straight", "Final Walk Through", "Final Check All Doors are Locked", "Final Check Equipment Off and Coolers Shut", "Turn Off Lights", "Turn Off Fans", "Clock Out", "Text Kim When You Leave: Stock/Facility/Staffing Issues/Cash Coin Needs/Need To Knows", "Make Bank Deposit"];
+
+const dailyTasks = [
+  {title:"Set Your 10:15 Alarm",details:"Set your alarm for <strong>10:15 AM</strong> to remind you to begin managing breaks."},
+  {title:"Write Down Your Break Plan",details:"Write down your game plan for breaks. Breaks are not always perfect—you may not do exactly what you planned, and that’s OK. The important thing is to have a plan.<br><br><strong>Remember:</strong><br>• Breaks are normally taken in the reverse order of who will be let go early.<br>• All servers should receive their break before any server is sent home early."},
+  {title:"Coffee Urn – HOLD",details:"Remind servers and bussers to always switch the coffee urn to <strong>HOLD</strong> when it is not brewing. Check it often to be sure HOLD is selected so the urn doesn’t become scorched inside."},
+  {title:"Monitor Coffee Production",details:"If too much coffee is being made and there has been excessive coffee left over at closing, place a note on the coffee urn around <strong>10:30 AM</strong> saying: “Please check with the manager before making more coffee.”"},
+  {title:"Run a Load of Towels",details:"Do a load of towels (laundry) if needed and time allows."},
+  {title:"Sweep the Laundry Area",details:"Sweep in front of the washer and dryer as needed."},
+  {title:"Empty Laundry Trash",details:"Empty the trash can by the washer/dryer when it is about half full."},
+  {title:"Stay Ahead on Clean Dishes",details:"Bussers should <strong>STAY AHEAD</strong> of putting away clean dishes. Don’t let clean, dry dishes sit in the kitchen very long."},
+  {title:"11:00 AM Bathroom Refresh",details:"Remind bussers at <strong>11:00 AM</strong> to check paper towels and toilet paper, pick up paper-towel scraps from the floor, and empty the trash cans from bathrooms #2 and #3 into the larger trash can in bathroom #1."},
+  {title:"Keep Lobby Glass Clean",details:"Keep the lobby entrance glass clean and free of fingerprints throughout the day."},
+  {title:"Weekly – Front Register Mat",details:"Once each week, take the mat in front of the register outside and hose it off. Vacuum and mop the floor underneath before replacing the mat."},
+  {title:"Menu Mondays",details:"Clean all menus."},
+  {title:"Servers Should Stay Busy",details:"When business is slow, servers should complete both their assigned chores and general restaurant chores so that nothing carries over to the next day."},
+  {title:"Keep the Café Clean",details:"Do a little cleaning every day. When time allows, have bussers wipe down window sills, windows and floor molding, dust shelves, and complete other detail-cleaning tasks."}
+];
+
+const closingTasks = ["Turn Open Sign Off", "Bring Flags In To Porch", "Empty 3 Trash Cans", "Check Out Servers", "Count Drawer", "Create Deposit", "$300 Exactly Left in Drawer", "Close Out Day on Toast", "Staple Together (Put In Brown Folder): Cash Drawer Printout, Z Report, Deposit Acknowledgement, Receipts and Gift Certificates From the Day", "Write Down Net Sales, #Guests and Weather On Calendar", "Calculate Busser Tip Payouts. Put in Drawer.", "Close Porch", "Kitchen Needs For Tomorrow", "Restock Hostess Station", "Check Server Chores Are Done", "Check Busser Chores Are Done", "Double Check Espresso Machine Was Cleaned", "Check Bathrooms (Clean if no busser)", "Thermostat (74/summer and 69/winter)", "Turn Off Lights", "Turn Off Fans", "Coffee Urn on HOLD", "Coffee Warming Stations OFF", "Check Clean Bussing Tubs at All Stations", "Tables Set Uniformly and Correctly", "Chairs Pushed In", "Final Walk Through", "Final Check All Doors are Locked", "Final Check Equipment Off and Coolers Shut", "Text Kim When You Leave: Stock/Facility/Staffing Issues/Cash Coin Needs/Need To Knows", "Make Bank Deposit"];
 
 const configs = {
   opening: {
@@ -198,6 +224,13 @@ const configs = {
     listId: "list", countId: "count", pctId: "pct", barId: "bar",
     completeId: "complete", resetId: "reset",
     resetPrompt: "Reset every opening item?"
+  },
+  daily: {
+    tasks: dailyTasks,
+    storageKey: "villageCafeDailySimpleV1",
+    listId: "dailyList", countId: "dailyCount", pctId: "dailyPct", barId: "dailyBar",
+    completeId: "dailyComplete", resetId: "dailyReset",
+    resetPrompt: "Reset every daily item?"
   },
   closing: {
     tasks: closingTasks,
@@ -237,9 +270,11 @@ function renderChecklist(name) {
     const button = document.createElement("button");
     button.className = "task" + (state[index] ? " done" : "");
     button.type = "button";
+    const item = typeof task === "string" ? {title: task, details: ""} : task;
     button.innerHTML =
       '<span class="box">' + (state[index] ? '✓' : '') + '</span>' +
-      '<span class="label">' + task + '</span>';
+      '<span class="task-copy"><span class="label">' + item.title + '</span>' +
+      (item.details ? '<span class="details">' + item.details + '</span>' : '') + '</span>';
 
     button.addEventListener("click", () => {
       state[index] = !state[index];
